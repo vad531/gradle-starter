@@ -1,0 +1,106 @@
+plugins {
+    id 'java'
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+    group = 'org.example'
+    version = '1.0-SNAPSHOT'
+}
+
+    dependencies {
+        testImplementation platform('org.junit:junit-bom:5.10.0')
+        testImplementation 'org.junit.jupiter:junit-jupiter'
+        implementation project(':util')
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+
+    tasks.named("clean") {
+        group = "Custom Tasks"
+        description = "Cleans the project."
+    }
+
+    tasks.named("processResources") {
+        group = "Custom Tasks"
+        description = "Processes resource files."
+    }
+
+    tasks.named("compileJava") {
+        group = "Custom Tasks"
+        description = "Compiles Java source files."
+        dependsOn("processResources")
+    }
+
+    tasks.named("classes") {
+        group = "Custom Tasks"
+        description = "Assembles classes."
+        dependsOn("compileJava", "processResources")
+    }
+
+    tasks.named("javadoc") {
+        group = "Custom Tasks"
+        description = "Generates Java documentation."
+        dependsOn("classes")
+    }
+
+    tasks.named("processTestResources") {
+        group = "Custom Tasks"
+        description = "Processes test resources."
+    }
+
+    tasks.named("compileTestJava") {
+        group = "Custom Tasks"
+        description = "Compiles test Java files."
+        dependsOn("processTestResources", "classes")
+    }
+
+    tasks.named("testClasses") {
+        group = "Custom Tasks"
+        description = "Assembles test classes."
+        dependsOn("compileTestJava", "processTestResources")
+    }
+
+    tasks.named("test") {
+        group = "Custom Tasks"
+        description = "Runs the tests."
+        dependsOn("testClasses")
+    }
+
+    tasks.named("jar") {
+        group = "Custom Tasks"
+        description = "Builds a JAR file."
+        dependsOn("classes")
+    }
+
+    tasks.register("uploadArchives") {
+        group = "Custom Tasks"
+        description = "Uploads archives."
+        dependsOn("jar")
+    }
+
+    tasks.named("assemble") {
+        group = "Custom Tasks"
+        description = "Assembles the outputs."
+        dependsOn("jar")
+    }
+
+    tasks.named("check") {
+        group = "Custom Tasks"
+        description = "Runs all checks."
+        dependsOn("test")
+    }
+
+    tasks.named("build") {
+        group = "Custom Tasks"
+        description = "Builds the project."
+        dependsOn("check", "assemble")
+    }
